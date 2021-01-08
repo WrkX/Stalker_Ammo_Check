@@ -18,4 +18,3 @@ Unzip the file and drag the content of the **1. Base** folder into Stalker Anoma
 Open the ingame control settings and set the Ammo Check button to whatever you want.
 
 If you use the *Ammo Type Check 2 keybinds*-Edition you can also find the button config there.
-
