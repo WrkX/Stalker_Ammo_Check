@@ -1,4 +1,4 @@
-#V2 Now live #
+# V2 is now live #
 
 # The Stalker Anomaly **Ammo Check** Mod for RC18 #
 
