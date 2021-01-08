@@ -843,6 +843,9 @@
 	<string id="st_ac_jammed">
 		<text>Jammed Weapon</text>
 	</string>
+	<string id="st_ac_noMag">
+		<text>No Magazine in the weapon</text>
+	</string>
 
 <!-- Lost to the Zone -->
 	<string id="st_lttz_eidolon_strelok_message">
