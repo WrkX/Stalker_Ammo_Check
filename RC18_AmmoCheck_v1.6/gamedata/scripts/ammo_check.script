@@ -101,6 +101,7 @@ function checkAmmo()
 			else
 				message = game.translate_string("st_ac_empty")
 			end
+			
 		-- No magazine weapons
 		else(not defaultMagSectionExists) then
 			local wObj = alife_object(weaponId)
