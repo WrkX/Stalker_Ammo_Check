@@ -109,9 +109,9 @@ function checkAmmo()
 			local maglessAmmo = data.ammo_elapsed
 			
 			if (maglessAmmo > 0) then
-				message = maglessAmmo.." left"
+				message = maglessAmmo.. " ".. game.translate_string("st_ac_ammoLeft")
 			else
-				message = "Empty"
+				message = game.translate_string("st_ac_empty")
 			end		
 		end
 		
