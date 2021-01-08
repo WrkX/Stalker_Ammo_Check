@@ -19,6 +19,3 @@ Open the ingame control settings and set the Ammo Check button to whatever you w
 
 If you use the *Ammo Type Check 2 keybinds*-Edition you can also find the button config there.
 
-## Additional Information ##
-
-Since Anomaly Magazines has no RC 18 version (afaik) I had to change the script a little. As soon as a Magazine mod gets an update I will make it compatible.
