@@ -103,7 +103,7 @@ function checkAmmo()
 			end
 			
 		-- No magazine weapons
-		else(not defaultMagSectionExists) then
+		elseif(not defaultMagSectionExists) then
 			local wObj = alife_object(weaponId)
 			local data = utils_stpk.get_weapon_data(wObj)
 			local maglessAmmo = data.ammo_elapsed
