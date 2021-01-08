@@ -846,6 +846,9 @@
 	<string id="st_ac_noMag">
 		<text>Магазин снят</text>
 	</string>
+	<string id="st_ac_ammoLeft">
+		<text>осталось</text>
+	</string>
 	
 <!-- Lost to the Zone -->
 	<string id="st_lttz_eidolon_strelok_message">
