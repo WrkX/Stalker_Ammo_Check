@@ -1,11 +1,11 @@
-# V2.2 is now live #
+# V2.3 is now live #
 
 # The Stalker Anomaly **Ammo Check** Mod for RC18+ #
 
 This mod lets you create a keybind in the settings to check how much ammo is left in the magazine. At the same time it hides the default ammo counter on the bottom right.
 
 ## How to install ##
-Download the release you want (v2.0 for the Anomaly Magazines version, v1.5 for the independent one).
+Download the release you want (v2.0+ for the Anomaly Magazines version, v1.5 for the independent one).
 
 Unzip the folder and drag the gamedata folder into your your stalker folder.
 
