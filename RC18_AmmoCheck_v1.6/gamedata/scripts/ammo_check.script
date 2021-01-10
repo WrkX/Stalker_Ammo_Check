@@ -42,10 +42,11 @@ end
 -- Main function --
 function checkAmmo()
 	local weapon = db.actor:item_in_slot(db.actor:active_slot())
-	local weaponId = weapon:id()
 	
 	-- ends if no weapon is in hand etc.
 	if(weapon == nil or db.actor == nil or no_ammo_wpns[weapon:section()]) then return -1 end 
+	
+	local weaponId = weapon:id()
 	
 	-- Checks if the weapon is a grenade (type 4) or bolt/bullet case (type 1)
 	local weaponType = system_ini():r_u32(weapon:section(), "ef_weapon_type") 
