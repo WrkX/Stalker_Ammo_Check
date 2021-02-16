@@ -1,0 +1,10 @@
+
+function check_ammo(weapon)
+	printf("started check_ammo")
+	
+	weapon:play_hud_motion("anm_ammoCheck", true, 0, 1, 0)
+	--game.only_allow_movekeys(true)
+
+end
+
+

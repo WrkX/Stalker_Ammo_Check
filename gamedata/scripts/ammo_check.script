@@ -1,0 +1,146 @@
+-- locals --
+local no_ammo_wpns = {
+	wpn_binoc = true,
+	wpn_binoc_inv = true,
+	wpn_knife = true,
+	wpn_knife2 = true,
+	wpn_knife3 = true,
+	wpn_knife4 = true,
+	wpn_knife5 = true,
+	wpn_axe = true,
+	wpn_axe2 = true,
+	wpn_axe3 = true,
+	device_pda_1 = true,
+	grenade_f1 = true,
+	grenade_rgd5 = true,
+	grenade_smoke = true,
+}
+local jammed_weapon = false
+
+function on_game_start()
+	RegisterScriptCallback("on_key_press",on_key_press)
+	RegisterScriptCallback("actor_on_weapon_jammed", weapon_jammed)
+	RegisterScriptCallback("actor_on_weapon_reload", on_reload)
+end
+
+-- Script Callbacks --
+function on_key_press(key)
+	local bind = dik_to_bind(key)
+    if (bind == key_bindings.kCUSTOM25) then
+		checkAmmo()
+	end
+end
+
+function weapon_jammed()
+	jammed_weapon = true
+end
+
+function on_reload()
+	jammed_weapon = false
+end
+	
+-- Main function --
+function checkAmmo()
+	
+	local weapon = db.actor:item_in_slot(db.actor:active_slot())
+	
+	-- ends if no weapon is in hand etc.
+	if(weapon == nil or db.actor == nil or no_ammo_wpns[weapon:section()]) then return -1 end 
+	
+	ammo_check_animations.check_ammo(weapon)
+	--[[
+	local weapon = db.actor:item_in_slot(db.actor:active_slot())
+	
+	-- ends if no weapon is in hand etc.
+	if(weapon == nil or db.actor == nil or no_ammo_wpns[weapon:section()]) then return -1 end 
+	
+	local weaponId = weapon:id()
+	
+	-- Checks if the weapon is a grenade (type 4) or bolt/bullet case (type 1)
+	local weaponType = system_ini():r_u32(weapon:section(), "ef_weapon_type") 
+	if (weaponType == 4 or weaponType == 1 or weaponType == nil) then return -1 end
+	
+	
+	local currentState = weapon:get_state()
+	
+	-- checks if the Weapon uses a magazine or if the bullets are used directly
+	local defaultMagSection = wuut_mags.WeaponGetDefaulMagSection(weapon)
+	local defaultMagSectionExists = system_ini():section_exist(defaultMagSection)
+	
+	
+	if(currentState == 0) then
+		-- if magazine weapon
+		if(defaultMagSectionExists) then
+			local currentAmmo = weapon:get_ammo_in_magazine()
+			if (currentAmmo == nil) then return -1 end		
+			
+			-- gets wuut's magazine data and extracts the magazine name, e.g. mag_wpn_ump45_11.43x23_fmj
+			local dataWeapon = wuut_mags.GetMagStorage(weaponId)
+			local magData = str_explode(dataWeapon,":")
+			local magName = magData[2]
+	
+			-- only valid mags, spawned weapons do not have a valid mag set by default 
+			if(magName == nil) then return -1 end
+			
+			-- if the weapon has no mag inserted, print the No Mag inserted message...
+			if(magName == "no_mag") then
+				message = game.translate_string("st_ac_noMag")
+				actor_menu.set_msg(1, message, 1)
+				return -1
+			end
+			
+			-- ... else extract the maxAmmo from Wuuts "Wuut_magazines.ltx" file
+			local magMaxAmmo = system_ini():r_u32(magName, "max_mag_size")
+				
+			local maxAmmo = magMaxAmmo
+			local curAmmoPerc = currentAmmo/maxAmmo
+				
+			if (curAmmoPerc == 1) then 
+				message = game.translate_string("st_ac_full")
+			elseif (curAmmoPerc < 1 and curAmmoPerc >= 0.8) then 
+				message = game.translate_string("st_ac_nearly_full")
+			elseif (curAmmoPerc < 0.8 and curAmmoPerc >= 0.6) then 
+				message = game.translate_string("st_ac_more_half")
+			elseif (curAmmoPerc < 0.6 and curAmmoPerc >= 0.45) then 
+				message = game.translate_string("st_ac_about_half")
+			elseif (curAmmoPerc < 0.45 and curAmmoPerc >= 0.25) then 
+				message = game.translate_string("st_ac_less_half")
+			elseif (curAmmoPerc < 0.25 and curAmmoPerc >= 0.001) then 
+				message = game.translate_string("st_ac_near_empty")
+			else
+				message = game.translate_string("st_ac_empty")
+			end
+			
+		-- No magazine weapons
+		elseif(not defaultMagSectionExists) then
+			local wObj = alife_object(weaponId)
+			local data = utils_stpk.get_weapon_data(wObj)
+			local maglessAmmo = data.ammo_elapsed
+			
+			if (maglessAmmo > 0) then
+				message = maglessAmmo.. " ".. game.translate_string("st_ac_ammoLeft")
+			else
+				message = game.translate_string("st_ac_empty")
+			end		
+		end
+		
+		if (jammed_weapon) then 
+			message = game.translate_string("st_ac_jammed")
+		end
+		
+		db.actor:hide_weapon()
+		CreateTimeEvent(0,"showMessage",0.7,function() 
+            actor_menu.set_msg(1, message, 1)
+            return true
+        end)
+		
+		CreateTimeEvent(0,"restore Weapon",1.5,function() 
+            db.actor:restore_weapon()
+            return true
+        end)
+		
+	end
+	
+	]]--
+end
+
