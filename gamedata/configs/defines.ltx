@@ -63,10 +63,7 @@ safemode_anm_power2 = 0.6
 --< Ammo Check animations >--
 anm_ammoCheck_wpn_mp5sd					= sparco_hands_mp5sd_check_ammo, sparco_mp5sd_check_ammo, 1
 anm_ammoCheck_wpn_abakan				= sparco_hands_abakan_check_ammo, sparco_abakan_check_ammo, 2
-anm_ammoCheck_wpn_9a91					= sparco_9a91_hands_check_ammo, sparco_9a91_check_ammo, 1
-
-
-
+anm_ammoCheck_wpn_9a91					= sparco_hands_9a91_check_ammo, sparco_9a91_check_ammo, 1
 
 [hud_mid_interia]
 inertion_offset_LRUD_aim = 0.011, 0.011, 0.01, 0.005
@@ -279,6 +276,11 @@ can_be_lowered				            = true
 weapon_lower_speed			            = 0.3
 use1_functor                            = item_weapon.menu_scope_inv
 use1_action_functor                     = item_weapon.func_scope
+
+use7_action_functor                                = wuut_mags.weapon_eject_mag_functor
+use7_functor                                       = wuut_mags.weapon_eject_mag_precondition
+use7_modes         			= inventory, loot
+use7_containers  			= actor_bag, actor_equ, actor_belt, npc_bag
 
 [common_ph_friction_params_on_npc_death] ; Parameters for setting change of friction at the time of the death of a character
 

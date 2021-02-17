@@ -1,26 +1,33 @@
-local sound_eff = {}
+local w_config = {}
 local check_snd = false
+local wepSec = ""
+
 function on_game_start()
 	RegisterScriptCallback("on_game_load",on_game_load)
 end
 
+--callback functions
 function on_game_load()
-	sound_eff = ini_file("items\\weapons\\w_sounds.ltx")
+	w_config = ini_file("items\\weapons\\w_anm_config.ltx")
+end
+
+function actor_on_weapon_before_fire(flags)
+	flags.ret_value = false
 end
 
 function check_ammo(weapon)
-	
 	local wName = ""
 	local weaponBase = ""
-	
+	local anm_time = 0
 	
 	wepSec = weapon:section()
 	-- filters out the wpn_ in front of the weapon name
 	weaponBase = string.gsub(wepSec, "wpn_","")
 
+	
+	
 	-- uses a lua pattern to assign the name of the base weapon to baseWeaponName by taking the name until the first '_' , eg. akaban_pso01 -> akaban
 	-- this way I do not have to create entries in defines.ltx for every attachment-version of a weapon
-	
 	for a in string.gmatch(weaponBase, "(.-)_%s*") do
 		printf(a)
 		if wName == "" then
@@ -28,31 +35,45 @@ function check_ammo(weapon)
 		end
 	end
 	
-	--if (--animation does not exists yet) then
-		--return false
-	--end
-	
 	-- base weapons without attachments need this
 	if wName == "" then
 		wName = weaponBase
 	end
 	
+	-- loads the time the animation takes set in w_anm_config
+	anm_time = tonumber(w_config:r_string_ex(wName, "tm"))
 	
 	-- plays the animation defined in defines.ltx and the sound
 		-- parameter: 1. animation name, 2. smoothing?, 3. 4. Speed, 5.
 	weapon:play_hud_motion("anm_ammoCheck_wpn_"..wName, true, 0, 1, 0)
-	check_snd = sound_object(sound_eff:r_string_ex(wName, "snd"))
+	check_snd = sound_object(w_config:r_string_ex(wName, "snd"))
     check_snd:play(db.actor, 0, sound_object.s2d)
-	
-	-- will come later
-	--game.only_allow_movekeys(true)
-
+	anm_started()
+	CreateTimeEvent(0,"stop_animation",anm_time,anm_ended)
+	wepSec, wName, weaponBase, anm_time = nil
 end
 
---[[
-	TODO
+function anim_existance_check(weapon)
+	-- checks the config file for a weapon entry. If it exists, it'll return true, otherwise false
+	local exists = nil
+	wepSec = weapon:section()
+	weaponBase = string.gsub(wepSec, "wpn_","")
+	exists = w_config:r_string_ex(weaponBase, "snd")
+
+	if exists == nil then
+		return false
+	end
 	
-	make it check if the entry in defines.ltx exists otherwise play old animation
-	error handling
-	
-]]--
+	return true
+end
+
+-- animation helpers
+function anm_started()
+	game.only_allow_movekeys(true)
+	RegisterScriptCallback("actor_on_weapon_before_fire", actor_on_weapon_before_fire)
+end
+
+function anm_ended()
+	UnregisterScriptCallback("actor_on_weapon_before_fire", actor_on_weapon_before_fire)
+	game.only_allow_movekeys(false)
+end
