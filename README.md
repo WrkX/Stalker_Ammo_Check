@@ -1,4 +1,4 @@
-# V2.3 is now live #
+# THIS IS THE VIP Version #
 
 # The Stalker Anomaly **Ammo Check** Mod for RC18+ #
 
