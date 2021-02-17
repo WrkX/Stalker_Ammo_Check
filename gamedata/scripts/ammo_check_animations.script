@@ -1,0 +1,58 @@
+local sound_eff = {}
+local check_snd = false
+function on_game_start()
+	RegisterScriptCallback("on_game_load",on_game_load)
+end
+
+function on_game_load()
+	sound_eff = ini_file("items\\weapons\\w_sounds.ltx")
+end
+
+function check_ammo(weapon)
+	
+	local wName = ""
+	local weaponBase = ""
+	
+	
+	wepSec = weapon:section()
+	-- filters out the wpn_ in front of the weapon name
+	weaponBase = string.gsub(wepSec, "wpn_","")
+
+	-- uses a lua pattern to assign the name of the base weapon to baseWeaponName by taking the name until the first '_' , eg. akaban_pso01 -> akaban
+	-- this way I do not have to create entries in defines.ltx for every attachment-version of a weapon
+	
+	for a in string.gmatch(weaponBase, "(.-)_%s*") do
+		printf(a)
+		if wName == "" then
+			wName = a
+		end
+	end
+	
+	--if (--animation does not exists yet) then
+		--return false
+	--end
+	
+	-- base weapons without attachments need this
+	if wName == "" then
+		wName = weaponBase
+	end
+	
+	
+	-- plays the animation defined in defines.ltx and the sound
+		-- parameter: 1. animation name, 2. smoothing?, 3. 4. Speed, 5.
+	weapon:play_hud_motion("anm_ammoCheck_wpn_"..wName, true, 0, 1, 0)
+	check_snd = sound_object(sound_eff:r_string_ex(wName, "snd"))
+    check_snd:play(db.actor, 0, sound_object.s2d)
+	
+	-- will come later
+	--game.only_allow_movekeys(true)
+
+end
+
+--[[
+	TODO
+	
+	make it check if the entry in defines.ltx exists otherwise play old animation
+	error handling
+	
+]]--
