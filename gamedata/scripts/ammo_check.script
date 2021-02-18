@@ -63,6 +63,7 @@ function checkAmmo()
 	
 	
 	if(currentState == 0) then
+		local message = ""
 		-- if magazine weapon
 		if(defaultMagSectionExists) then
 			local currentAmmo = weapon:get_ammo_in_magazine()
@@ -89,21 +90,7 @@ function checkAmmo()
 			local maxAmmo = magMaxAmmo
 			local curAmmoPerc = currentAmmo/maxAmmo
 				
-			if (curAmmoPerc == 1) then 
-				message = game.translate_string("st_ac_full")
-			elseif (curAmmoPerc < 1 and curAmmoPerc >= 0.8) then 
-				message = game.translate_string("st_ac_nearly_full")
-			elseif (curAmmoPerc < 0.8 and curAmmoPerc >= 0.6) then 
-				message = game.translate_string("st_ac_more_half")
-			elseif (curAmmoPerc < 0.6 and curAmmoPerc >= 0.45) then 
-				message = game.translate_string("st_ac_about_half")
-			elseif (curAmmoPerc < 0.45 and curAmmoPerc >= 0.25) then 
-				message = game.translate_string("st_ac_less_half")
-			elseif (curAmmoPerc < 0.25 and curAmmoPerc >= 0.001) then 
-				message = game.translate_string("st_ac_near_empty")
-			else
-				message = game.translate_string("st_ac_empty")
-			end
+			message = ammoInMagMessage(curAmmoPerc, message)
 			
 		-- No magazine weapons
 		elseif(not defaultMagSectionExists) then
@@ -126,7 +113,7 @@ function checkAmmo()
 
 		if anm_exists then
 			ammo_check_animations.check_ammo(weapon)
-			showMessage(message, 1.3)
+			showMessage(message, 1.2)
 		else
 			db.actor:hide_weapon()
 			showMessage(message, 0.7)
@@ -139,9 +126,30 @@ function checkAmmo()
 	end
 end
 
+-- helper functions
 function showMessage(message, timeUntilAppear)
 	CreateTimeEvent(0,"showMessage",timeUntilAppear,function() 
 		actor_menu.set_msg(1, message, 1)
 		return true
 	end)
+end
+
+function ammoInMagMessage(curAmmoPerc, message)
+	if (curAmmoPerc == 1) then 
+		message = game.translate_string("st_ac_full")
+	elseif (curAmmoPerc < 1 and curAmmoPerc >= 0.8) then 
+		message = game.translate_string("st_ac_nearly_full")
+	elseif (curAmmoPerc < 0.8 and curAmmoPerc >= 0.6) then 
+		message = game.translate_string("st_ac_more_half")
+	elseif (curAmmoPerc < 0.6 and curAmmoPerc >= 0.45) then 
+		message = game.translate_string("st_ac_about_half")
+	elseif (curAmmoPerc < 0.45 and curAmmoPerc >= 0.25) then 
+		message = game.translate_string("st_ac_less_half")
+	elseif (curAmmoPerc < 0.25 and curAmmoPerc >= 0.001) then 
+		message = game.translate_string("st_ac_near_empty")
+	else
+		message = game.translate_string("st_ac_empty")
+	end
+	
+	return message
 end

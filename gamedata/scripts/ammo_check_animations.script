@@ -1,12 +1,13 @@
 local w_config = {}
-local check_snd = false
+local wName = ""
 local wepSec = ""
 
 function on_game_start()
 	RegisterScriptCallback("on_game_load",on_game_load)
 end
 
---callback functions
+------------------------
+-- callback functions --
 function on_game_load()
 	w_config = ini_file("items\\weapons\\w_anm_config.ltx")
 end
@@ -15,33 +16,23 @@ function actor_on_weapon_before_fire(flags)
 	flags.ret_value = false
 end
 
+
+-------------------
+-- main function --
 function check_ammo(weapon)
-	local wName = ""
-	local weaponBase = ""
+	local check_snd = false
 	local anm_time = 0
 	
 	wepSec = weapon:section()
-	-- filters out the wpn_ in front of the weapon name
-	weaponBase = string.gsub(wepSec, "wpn_","")
-	-- uses a lua pattern to assign the name of the base weapon to baseWeaponName by taking the name until the first '_' , eg. akaban_pso01 -> akaban
-	-- this way I do not have to create entries in defines.ltx for every attachment-version of a weapon
-	for i in string.gmatch(weaponBase, "(.-)_%s*") do
-		if wName == "" then
-			wName = i
-		end
-	end
 	
-	-- base weapons without attachments need this
-	if wName == "" then
-		wName = weaponBase
-	end
+	wName = shortenWeaponName(wepSec)
 	
 	-- loads the time the animation takes set in w_anm_config
 	anm_time = tonumber(w_config:r_string_ex(wName, "tm"))
 	
 	--if Grenade launcher is on weapon, another animation will be played
 	wName = checkForGl(wName)
-		
+
 	-- plays the animation defined in defines.ltx and the sound
 		-- parameter: 1. animation name, 2. smoothing?, 3. 4. Speed, 5.
 	weapon:play_hud_motion("anm_ammoCheck_wpn_"..wName, true, 0, 1, 0)
@@ -52,22 +43,9 @@ function check_ammo(weapon)
 	wepSec, wName, weaponBase, anm_time = nil
 end
 
-function anim_existance_check(weapon)
-	-- checks the config file for a weapon entry. If it exists, it'll return true, otherwise false
-	local exists = nil
-	wepSec = weapon:section()
-	weaponBase = checkForGl(string.gsub(wepSec, "wpn_",""))
-	
-	exists = w_config:r_string_ex(weaponBase, "snd")
 
-	if exists == nil then
-		return false
-	end
-	
-	return true
-end
-
--- animation helpers
+-----------------------
+-- animation helpers --
 function anm_started()
 	game.only_allow_movekeys(true)
 	RegisterScriptCallback("actor_on_weapon_before_fire", actor_on_weapon_before_fire)
@@ -78,9 +56,47 @@ function anm_ended()
 	game.only_allow_movekeys(false)
 end
 
+----------------------------
+-- general help functions --
+function anim_existance_check(weapon)
+	-- checks the config file for a weapon entry. If it exists, it'll return true, otherwise false
+	local exists = nil
+	
+	wepSec = weapon:section()
+	wName = shortenWeaponName(wepSec)
+	
+	exists = w_config:r_string_ex(wName, "snd")
+
+	if exists == nil then
+		return false
+	end
+	
+	return true
+end
+
 function checkForGl(weapon)
 	if utils_item.has_attached_gl(db.actor:item_in_slot(db.actor:active_slot())) then
 		weapon = weapon.."_gl"
 	end
 	return weapon
+end
+
+function shortenWeaponName(wepSec)
+	-- uses a lua pattern to assign the name of the base weapon to baseWeaponName by taking the name until the first '_' , eg. akaban_pso01 -> akaban
+	-- this way I do not have to create entries in defines.ltx for every attachment-version of a weapon
+	local shortenedName = ""
+	local base = string.gsub(wepSec, "wpn_","")
+	
+	for i in string.gmatch(base, "(.-)_%s*") do
+		if shortenedName == "" then
+			shortenedName = i
+		end
+	end
+
+	-- base weapons without attachments need this
+	if shortenedName == "" then
+		shortenedName = base
+	end
+	
+	return shortenedName
 end
