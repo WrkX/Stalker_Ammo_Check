@@ -1,6 +1,7 @@
 local w_config = {}
 local wName = ""
 local wepSec = ""
+local check_snd = false
 
 function on_game_start()
 	RegisterScriptCallback("on_game_load",on_game_load)
@@ -20,7 +21,7 @@ end
 -------------------
 -- main function --
 function check_ammo(weapon)
-	local check_snd = false
+	
 	local anm_time = 0
 	
 	wepSec = weapon:section()
@@ -34,7 +35,7 @@ function check_ammo(weapon)
 	wName = checkForGl(wName)
 
 	-- plays the animation defined in defines.ltx and the sound
-		-- parameter: 1. animation name, 2. smoothing?, 3. 4. Speed, 5.
+	---- parameter: 1. animation name, 2. smoothing?, 3. 4. Speed, 5.
 	weapon:play_hud_motion("anm_ammoCheck_wpn_"..wName, true, 0, 1, 0)
 	check_snd = sound_object(w_config:r_string_ex(wName, "snd"))
     check_snd:play(db.actor, 0, sound_object.s2d)
