@@ -48,13 +48,6 @@ function checkAmmo()
 	-- ends if no weapon is in hand etc.
 	if(weapon == nil or db.actor == nil or no_ammo_wpns[weapon:section()]) then return -1 end 
 	
-	
-
-	local weapon = db.actor:item_in_slot(db.actor:active_slot())
-	
-	-- ends if no weapon is in hand etc.
-	if(weapon == nil or db.actor == nil or no_ammo_wpns[weapon:section()]) then return -1 end 
-	
 	local weaponId = weapon:id()
 	
 	-- Checks if the weapon is a grenade (type 4) or bolt/bullet case (type 1)
@@ -74,7 +67,7 @@ function checkAmmo()
 		if(defaultMagSectionExists) then
 			local currentAmmo = weapon:get_ammo_in_magazine()
 			if (currentAmmo == nil) then return -1 end		
-			
+					
 			-- gets wuut's magazine data and extracts the magazine name, e.g. mag_wpn_ump45_11.43x23_fmj
 			local dataWeapon = wuut_mags.GetMagStorage(weaponId)
 			local magData = str_explode(dataWeapon,":")
@@ -137,20 +130,18 @@ function checkAmmo()
 		else
 			db.actor:hide_weapon()
 			showMessage(message, 0.7)
+			
+			CreateTimeEvent(0,"restore Weapon",1.5,function() 
+				db.actor:restore_weapon()
+				return true
+			end)
 		end
-		
 	end
-	
 end
 
-function showMessage(message, timeUntilAppear, timeUntilGone)
+function showMessage(message, timeUntilAppear)
 	CreateTimeEvent(0,"showMessage",timeUntilAppear,function() 
 		actor_menu.set_msg(1, message, 1)
-		return true
-	end)
-		
-	CreateTimeEvent(0,"restore Weapon",1.5,function() 
-		db.actor:restore_weapon()
 		return true
 	end)
 end

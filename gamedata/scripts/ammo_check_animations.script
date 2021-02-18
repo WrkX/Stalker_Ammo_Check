@@ -23,15 +23,11 @@ function check_ammo(weapon)
 	wepSec = weapon:section()
 	-- filters out the wpn_ in front of the weapon name
 	weaponBase = string.gsub(wepSec, "wpn_","")
-
-	
-	
 	-- uses a lua pattern to assign the name of the base weapon to baseWeaponName by taking the name until the first '_' , eg. akaban_pso01 -> akaban
 	-- this way I do not have to create entries in defines.ltx for every attachment-version of a weapon
-	for a in string.gmatch(weaponBase, "(.-)_%s*") do
-		printf(a)
+	for i in string.gmatch(weaponBase, "(.-)_%s*") do
 		if wName == "" then
-			wName = a
+			wName = i
 		end
 	end
 	
@@ -43,6 +39,9 @@ function check_ammo(weapon)
 	-- loads the time the animation takes set in w_anm_config
 	anm_time = tonumber(w_config:r_string_ex(wName, "tm"))
 	
+	--if Grenade launcher is on weapon, another animation will be played
+	wName = checkForGl(wName)
+		
 	-- plays the animation defined in defines.ltx and the sound
 		-- parameter: 1. animation name, 2. smoothing?, 3. 4. Speed, 5.
 	weapon:play_hud_motion("anm_ammoCheck_wpn_"..wName, true, 0, 1, 0)
@@ -57,7 +56,8 @@ function anim_existance_check(weapon)
 	-- checks the config file for a weapon entry. If it exists, it'll return true, otherwise false
 	local exists = nil
 	wepSec = weapon:section()
-	weaponBase = string.gsub(wepSec, "wpn_","")
+	weaponBase = checkForGl(string.gsub(wepSec, "wpn_",""))
+	
 	exists = w_config:r_string_ex(weaponBase, "snd")
 
 	if exists == nil then
@@ -76,4 +76,11 @@ end
 function anm_ended()
 	UnregisterScriptCallback("actor_on_weapon_before_fire", actor_on_weapon_before_fire)
 	game.only_allow_movekeys(false)
+end
+
+function checkForGl(weapon)
+	if utils_item.has_attached_gl(db.actor:item_in_slot(db.actor:active_slot())) then
+		weapon = weapon.."_gl"
+	end
+	return weapon
 end
