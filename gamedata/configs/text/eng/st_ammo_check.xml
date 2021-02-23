@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="windows-1251"?>
+<string_table>
+	<string id="st_ac_full">
+		<text>Full Mag</text>
+	</string>
+	<string id="st_ac_nearly_full">
+		<text>Nearly Full Mag</text>
+	</string>
+	<string id="st_ac_more_half">
+		<text>More than Half Mag</text>
+	</string>
+	<string id="st_ac_about_half">
+		<text>About Half Mag</text>
+	</string>
+	<string id="st_ac_less_half">
+		<text>Less Than Half Mag</text>
+	</string>
+	<string id="st_ac_near_empty">
+		<text>Nearly Empty Mag</text>
+	</string>
+	<string id="st_ac_empty">
+		<text>Empty</text>
+	</string>
+	<string id="st_ac_jammed">
+		<text>Jammed Weapon</text>
+	</string>
+	<string id="st_ac_noMag">
+		<text>No Magazine in the weapon</text>
+	</string>
+	<string id="st_ac_ammoLeft">
+		<text>left</text>
+	</string>
+</string_table>
