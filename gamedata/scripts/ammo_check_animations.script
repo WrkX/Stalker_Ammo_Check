@@ -4,6 +4,12 @@ local wName = ""
 local wepSec = ""
 local check_snd = false
 
+-- Weapons that need other animations than their base version
+local exceptions = {
+	wpn_ak74m_alt = true
+	,wpn_ak74m_camo = true
+}
+
 function on_game_start()
 	RegisterScriptCallback("on_game_load",on_game_load)
 end
@@ -29,6 +35,10 @@ function check_ammo(weapon, ammoPercent)
 	wepSec = weapon:section()
 	wName = shortenWeaponName(wepSec)
 	soundName = shortenWeaponName(wepSec)
+	
+	checkForException(wepSec)
+	
+	printf(wName)
 	--if Grenade launcher is on weapon, another animation will be played, same with no ammo in mag (if the animations are available)
 	wName = checkForGl(wName)
 	wName = checkAmmoInMag(wName, ammoPercent)
@@ -68,12 +78,14 @@ function anim_existance_check(weapon)
 	printf(wepSec)
 	printf("Find me")
 	
+	checkForException(wepSec)
+	
 	exists = w_config:r_string_ex(wName, "snd")
 
 	if exists == nil then
 		return false
 	end
-	
+	wepSec, wName, weaponBase, anm_time = nil
 	return true
 end
 
@@ -100,6 +112,16 @@ function checkForSpecialAnimation(weapon, special)
 		return false
 	end 
 	return true
+end
+
+function checkForException(wepSec)
+	if(exceptions[wepSec]) then 
+		-- those 2 have the same bone structure, but a different one than their base version
+		if wepSec == "wpn_ak74m_alt" or wepSec == "wpn_ak74m_camo" then
+			wName = "ak74m_alternative"
+			soundName = "ak74m_alternative"
+		end
+	end
 end
 
 function shortenWeaponName(wepSec)
