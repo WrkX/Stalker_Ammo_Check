@@ -1,6 +1,8 @@
 name: Copy To Branches
 on:
-  workflow_dispatch:
+  push:
+    branches:
+      - WIPv2
 jobs:
   copy-to-branches:
     runs-on: ubuntu-latest
@@ -13,4 +15,4 @@ jobs:
         env:
           branches: WIPv2CodeChanges
           key: WIPv2
-          files: ammo_check.script ammo_check_animations.script
+          files: gamedata/scripts/ammo_check.script gamedata/scripts/ammo_check_animations.script
