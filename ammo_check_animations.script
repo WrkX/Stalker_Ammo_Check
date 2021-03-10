@@ -1,0 +1,161 @@
+local w_config = {}
+local defines = {}
+local wName = ""
+local wepSec = ""
+local check_snd = false
+
+-- Weapons that need other animations than their base version
+local exceptions = {
+	wpn_ak74m_alt = true
+	,wpn_ak74m_camo = true
+}
+
+function on_game_start()
+	RegisterScriptCallback("on_game_load",on_game_load)
+end
+
+------------------------
+-- callback functions --
+function on_game_load()
+	w_config = ini_file("items\\weapons\\w_anm_config.ltx")
+	defines = ini_file("defines.ltx")
+end
+
+function actor_on_weapon_before_fire(flags)
+	flags.ret_value = false
+end
+
+
+-------------------
+-- main function --
+function check_ammo(weapon, ammoPercent)
+	local soundName = ""
+	local anm_time = 0
+	
+	wepSec = weapon:section()
+	wName = shortenWeaponName(wepSec)
+	soundName = shortenWeaponName(wepSec)
+	
+	checkForException(wepSec)
+	
+	printf(wName)
+	--if Grenade launcher is on weapon, another animation will be played, same with no ammo in mag (if the animations are available)
+	wName = checkForGl(wName)
+	wName = checkAmmoInMag(wName, ammoPercent)
+	-- loads the time the animation takes set in w_anm_config
+	anm_time = tonumber(w_config:r_string_ex(soundName, "tm"))
+	-- plays the animation defined in defines.ltx and the sound
+	---- parameter: 1. animation name, 2. smoothing?, 3. 4. Speed, 5.
+	weapon:play_hud_motion("anm_ammoCheck_wpn_"..wName, true, 0, 1, 0)
+	
+	if checkForSpecialSound(soundName) then
+		check_snd = sound_object(w_config:r_string_ex(soundName, "snd_empty"))
+	else
+		check_snd = sound_object(w_config:r_string_ex(soundName, "snd"))
+	end
+    check_snd:play(db.actor, 0, sound_object.s2d)
+	anm_started()
+	CreateTimeEvent(0,"stop_animation",anm_time,anm_ended)
+	wepSec, wName, weaponBase, anm_time = nil
+end
+
+
+-----------------------
+-- animation helpers --
+function anm_started()
+	game.only_allow_movekeys(true)
+	RegisterScriptCallback("actor_on_weapon_before_fire", actor_on_weapon_before_fire)
+end
+
+function anm_ended()
+	UnregisterScriptCallback("actor_on_weapon_before_fire", actor_on_weapon_before_fire)
+	game.only_allow_movekeys(false)
+end
+
+----------------------------
+-- general help functions --
+function anim_existance_check(weapon)
+	-- checks the config file for a weapon entry. If it exists, it'll return true, otherwise false
+	local exists = nil
+	
+	wepSec = weapon:section()
+	wName = shortenWeaponName(wepSec)
+	printf(wepSec)
+	printf("Find me")
+	
+	checkForException(wepSec)
+	
+	exists = w_config:r_string_ex(wName, "snd")
+
+	if exists == nil then
+		return false
+	end
+	wepSec, wName, weaponBase, anm_time = nil
+	return true
+end
+
+function checkForGl(weapon)
+	if utils_item.has_attached_gl(db.actor:item_in_slot(db.actor:active_slot())) and checkForSpecialAnimation(weapon, "gl") then
+		weapon = weapon.."_gl"
+	end
+	return weapon
+end
+
+function checkAmmoInMag(weapon, ammoPercent)
+	if ammoPercent == 0 then
+		if checkForSpecialAnimation(weapon, "empty") then
+			weapon = weapon.."_empty"
+			end
+	end
+	return weapon
+end
+
+function checkForSpecialAnimation(weapon, special)
+	local animExists = defines:r_string_ex("hud_base", "anm_ammoCheck_wpn_"..weapon.."_"..special) 
+
+	if animExists == nil then
+		return false
+	end 
+	return true
+end
+
+function checkForException(wepSec)
+	if(exceptions[wepSec]) then 
+		-- those 2 have the same bone structure, but a different one than their base version
+		if wepSec == "wpn_ak74m_alt" or wepSec == "wpn_ak74m_camo" then
+			wName = "ak74m_alternative"
+			soundName = "ak74m_alternative"
+		end
+	end
+end
+
+function shortenWeaponName(wepSec)
+	-- uses a lua pattern to assign the name of the base weapon to baseWeaponName by taking the name until the first '_' , eg. akaban_pso01 -> akaban
+	-- this way I do not have to create entries in defines.ltx for every attachment-version of a weapon
+	local shortenedName = ""
+	local base = string.gsub(wepSec, "wpn_","")
+	
+	for i in string.gmatch(base, "(.-)_%s*") do
+		if shortenedName == "" then
+			shortenedName = i
+		end
+	end
+
+	-- base weapons without attachments need this
+	if shortenedName == "" then
+		shortenedName = base
+	end
+	
+	return shortenedName
+end
+
+-- sound special
+
+function checkForSpecialSound(weapon)
+	local soundExists = w_config:r_string_ex(weapon, "snd_empty") 
+
+	if soundExists == nil then
+		return false
+	end 
+	return true
+end
