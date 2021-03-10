@@ -47,7 +47,12 @@ function check_ammo(weapon, ammoPercent)
 	-- plays the animation defined in defines.ltx and the sound
 	---- parameter: 1. animation name, 2. smoothing?, 3. 4. Speed, 5.
 	weapon:play_hud_motion("anm_ammoCheck_wpn_"..wName, true, 0, 1, 0)
-	check_snd = sound_object(w_config:r_string_ex(soundName, "snd"))
+	
+	if checkForSpecialSound(soundName) then
+		check_snd = sound_object(w_config:r_string_ex(soundName, "snd_empty"))
+	else
+		check_snd = sound_object(w_config:r_string_ex(soundName, "snd"))
+	end
     check_snd:play(db.actor, 0, sound_object.s2d)
 	anm_started()
 	CreateTimeEvent(0,"stop_animation",anm_time,anm_ended)
@@ -142,4 +147,15 @@ function shortenWeaponName(wepSec)
 	end
 	
 	return shortenedName
+end
+
+-- sound special
+
+function checkForSpecialSound(weapon)
+	local soundExists = w_config:r_string_ex(weapon, "snd_empty") 
+
+	if soundExists == nil then
+		return false
+	end 
+	return true
 end
